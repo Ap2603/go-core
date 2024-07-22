@@ -1,0 +1,304 @@
+openapi: 3.0.0
+info:
+  description: API for SafePay services
+  title: SafePay API
+  version: 1.0.0
+servers:
+- description: SafePay Dev API Server
+  url: https://dev.api.getsafepay.com
+paths:
+  /auth/v1/company/authenticate:
+    post:
+      description: Authenticate the company and create a JWT token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+          description: Successful authentication
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad request
+      summary: Create JWT Token
+  /user/v1/guest/:
+    post:
+      description: Create a guest JWT token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuestResponse'
+          description: Successful authentication
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad request
+      summary: Create Guest JWT
+  /client/api-settings/v1/:
+    post:
+      operationId: clientApiSettingsV1Post
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSettingsResponse'
+          description: Successful creation of API key
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+      security:
+      - BearerAuth: []
+      summary: Create API Key
+      tags:
+      - API Settings
+  /client/passport/v1/token:
+    post:
+      operationId: clientPassportV1TokenPost
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeBasedTokenResponse'
+          description: Successful generation of time-based token
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Bad Request
+      security:
+      - MerchantSecretAuth: []
+      summary: Generate Time-Based Token
+      tags:
+      - Passport
+components:
+  schemas:
+    AuthRequest:
+      example:
+        password: azazazazaz
+        client: client_bb1d600f-f174-49dc-a34f-a79c77e237c8
+        email: zparekh@getsafepay.com
+      properties:
+        client:
+          example: client_bb1d600f-f174-49dc-a34f-a79c77e237c8
+          type: string
+        email:
+          example: zparekh@getsafepay.com
+          type: string
+        password:
+          example: azazazazaz
+          type: string
+      required:
+      - client
+      - email
+      - password
+      type: object
+    AuthResponse:
+      example:
+        data:
+          session: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          token: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+        status:
+          message: success
+          errors: []
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthResponse_data'
+        status:
+          $ref: '#/components/schemas/AuthResponse_status'
+      type: object
+    ErrorResponse:
+      example:
+        message: message
+        errors:
+        - errors
+        - errors
+      properties:
+        errors:
+          items:
+            type: string
+          type: array
+        message:
+          type: string
+      type: object
+    GuestRequest:
+      example:
+        country: PK
+        phone: "+923001234567"
+        last_name: Zaidi
+        first_name: Hassan
+        email: hzaidi@getsafepay.com
+      properties:
+        email:
+          example: hzaidi@getsafepay.com
+          type: string
+        phone:
+          example: "+923001234567"
+          type: string
+        country:
+          example: PK
+          type: string
+        first_name:
+          example: Hassan
+          type: string
+        last_name:
+          example: Zaidi
+          type: string
+      required:
+      - country
+      - email
+      - phone
+      type: object
+    GuestResponse:
+      example:
+        data:
+          session: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          token: guest_4ca55e56-45e6-46df-8d64-68ca86867be5
+        status:
+          message: success
+          errors: []
+      properties:
+        data:
+          $ref: '#/components/schemas/GuestResponse_data'
+        status:
+          $ref: '#/components/schemas/AuthResponse_status'
+      type: object
+    ApiSettingsResponse:
+      example:
+        data:
+          updated_at: 0001-01-01T00:00:00Z
+          webhook_secret: c44e1b93160e1ccd34ea9c40e79f5f11ea276105b563c53d9ca59e4eb8477686
+          created_at: 0001-01-01T00:00:00Z
+          client_id: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+          token: api_b3db2bd8-5fa3-4ec4-ab47-0733dacfed69
+        status:
+          message: success
+          errors:
+          - errors
+          - errors
+      properties:
+        data:
+          $ref: '#/components/schemas/ApiSettingsResponse_data'
+        status:
+          $ref: '#/components/schemas/ApiSettingsResponse_status'
+      type: object
+    TimeBasedTokenResponse:
+      example:
+        data: xnTyRgITVcHlyeKT2cf59_e836PouieQ6xPpuQiwFXD8M6HoJ283EP_zta2SKkm6B_IFNGEBmg==
+      properties:
+        data:
+          example: xnTyRgITVcHlyeKT2cf59_e836PouieQ6xPpuQiwFXD8M6HoJ283EP_zta2SKkm6B_IFNGEBmg==
+          type: string
+      type: object
+    AuthResponse_data:
+      example:
+        session: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+      properties:
+        session:
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+        token:
+          example: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+          type: string
+      type: object
+    AuthResponse_status:
+      example:
+        message: success
+        errors: []
+      properties:
+        errors:
+          example: []
+          items:
+            type: string
+          type: array
+        message:
+          example: success
+          type: string
+      type: object
+    GuestResponse_data:
+      example:
+        session: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token: guest_4ca55e56-45e6-46df-8d64-68ca86867be5
+      properties:
+        session:
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+        token:
+          example: guest_4ca55e56-45e6-46df-8d64-68ca86867be5
+          type: string
+      type: object
+    ApiSettingsResponse_data:
+      example:
+        updated_at: 0001-01-01T00:00:00Z
+        webhook_secret: c44e1b93160e1ccd34ea9c40e79f5f11ea276105b563c53d9ca59e4eb8477686
+        created_at: 0001-01-01T00:00:00Z
+        client_id: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+        token: api_b3db2bd8-5fa3-4ec4-ab47-0733dacfed69
+      properties:
+        token:
+          example: api_b3db2bd8-5fa3-4ec4-ab47-0733dacfed69
+          type: string
+        client_id:
+          example: client_071f9c25-c291-4dcf-a21e-79b576ddd0fd
+          type: string
+        webhook_secret:
+          example: c44e1b93160e1ccd34ea9c40e79f5f11ea276105b563c53d9ca59e4eb8477686
+          type: string
+        created_at:
+          example: 0001-01-01T00:00:00Z
+          format: date-time
+          type: string
+        updated_at:
+          example: 0001-01-01T00:00:00Z
+          format: date-time
+          type: string
+      type: object
+    ApiSettingsResponse_status:
+      example:
+        message: success
+        errors:
+        - errors
+        - errors
+      properties:
+        errors:
+          items:
+            type: string
+          type: array
+        message:
+          example: success
+          type: string
+      type: object
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+    MerchantSecretAuth:
+      in: header
+      name: X-SFPY-MERCHANT-SECRET
+      type: apiKey
