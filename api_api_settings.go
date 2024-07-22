@@ -13,6 +13,7 @@ package openapi
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -92,6 +93,7 @@ func (a *APISettingsAPIService) ClientApiSettingsV1PostExecute(r ApiClientApiSet
 				} else {
 					key = apiKey.Key
 				}
+				fmt.Printf("Setting Authorization header: %s\n", key) // Debug print
 				localVarHeaderParams["Authorization"] = key
 			}
 		}
